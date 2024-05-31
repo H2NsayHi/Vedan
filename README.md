@@ -1,12 +1,35 @@
-### 1. Requirement
-- nodejs >= v18.10
-- angular 16
+# Vedan
+## Installation
+```
+pip install -r requirements.txt
+```
 
-### 2. Install Package
-- npm install
-- npm update
+## Validation
+[`best.pt`](https://github.com/namphh/Vedan/blob/main/best.pt) 
+```
+model = YOLO('best.pt')
+```
 
-### 3. Run
-- 'npm start' or 'ng serve'
+## Prediction
+```
+python Code/main.py -p PATH-TO-IMAGE
+```
 
-### Navigate to http://localhost:4200. The app will automatically reload if you change any of the source files.
+## Output
+```
+xyxys = []
+confidences = []
+class_ids = []
+#img = cv2.imread(img)
+for result in results:
+  boxes = result.boxes.cpu().numpy()
+  xyxy = boxes.xyxy
+  for x in xyxy:
+    cv2.rectangle(img, (int(x[0]), int(x[1])), (int(x[2]), int(x[3])), (0,255,0))
+
+output = image_to_base64(img)
+```
+
+## Result
+<p align="center">
+  <img src="(https://github.com/namphh/Vedan/blob/main/results.jpg)">
