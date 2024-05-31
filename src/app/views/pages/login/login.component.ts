@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { UserService } from '@services/user.service';
 import { SessionStorageService } from '@services/session-storage.service';
 
 @Component({
@@ -14,7 +13,6 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private userService: UserService,
     private sessionService: SessionStorageService
   ) { }
 
@@ -24,24 +22,23 @@ export class LoginComponent {
   });
   isShowNotify: boolean = false;
   isLoading: boolean = false;
-  messageLoginResponse: string = '* '
-  login(){
-    this.isLoading = true
-    this.isShowNotify = false
-    this.messageLoginResponse = '* '
-    this.userService.login(this.signInForm.value).subscribe(
-      (res) => {
-        this.isLoading = false;
-        this.sessionService.saveData("jwt_token", res.token)
-        this.router.navigateByUrl('');
-      },
-      (err) => {
-        this.isLoading = false;
-          this.isShowNotify = true;
-          this.messageLoginResponse = this.messageLoginResponse + "System error";
-          this.sessionService.saveData("jwt_token", "No token")
-          this.router.navigateByUrl('');
-      }
-    )
+  messageLoginResponse: string = '* ';
+
+  login() {
+    this.isLoading = true;
+    this.isShowNotify = false;
+    this.messageLoginResponse = '* ';
+
+    const username = this.signInForm.value.username;
+    const password = this.signInForm.value.password;
+
+    if (username === 'Vedan' && password === 'Vedan') {
+      this.sessionService.saveData('jwt_token', 'your_generated_token');
+      this.router.navigateByUrl('/dashboard');
+    } else {
+      this.isLoading = false;
+      this.isShowNotify = true;
+      this.messageLoginResponse += 'Invalid username or password.';
+    }
   }
 }

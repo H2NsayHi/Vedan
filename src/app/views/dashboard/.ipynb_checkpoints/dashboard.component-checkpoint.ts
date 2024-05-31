@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PlateRecognitonService } from '@services/plate-recognition.service';
 
-
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss']
@@ -9,8 +8,9 @@ import { PlateRecognitonService } from '@services/plate-recognition.service';
 export class DashboardComponent implements OnInit {
   constructor(
     private plateRecognitonService: PlateRecognitonService
-  ) {
-  }
+  ) {}
+
+  public showResultImage: boolean = false; // Set to false initially
   public isShowRecogButton = true;
   public isLoading: boolean = false;
   public isShowUpload: boolean = true;
@@ -20,7 +20,11 @@ export class DashboardComponent implements OnInit {
   public accuracyTextPadding: string = 'Độ chính xác: '
   public currentFile: any
   public imgResult = ''
+  public numberBags: string = ''
+  public score: number = 0
+
   ngOnInit(): void {}
+
   upload(target: any){
     var files = target.files;
     if (files.length === 0) return;
@@ -37,7 +41,9 @@ export class DashboardComponent implements OnInit {
     }
     this.currentFile = files[0]
     this.isShowUpload = false
+    this.showResultImage = true
   }
+
   reset(){
     this.isShowUpload = true
     this.imageLocalUrl = ''
@@ -46,14 +52,22 @@ export class DashboardComponent implements OnInit {
     this.isLoading = false
     this.currentFile = undefined
     this.isShowRecogButton = true
+    this.showResultImage = false
+    
   }
+
   recognition(){
     this.isLoading = true
     if (this.currentFile != undefined) {
       var data = new FormData()
-      data.append('file', this.currentFile)
+      data.append('image', this.currentFile)
       this.plateRecognitonService.recognition(data).subscribe(res => {
-        this.isLoading = false
+        this.isLoading = false;
+        this.showResultImage = true;
+        this.imgResult = 'data:image/jpeg;base64,' + res.data.base64_r;
+        this.numberBags = res.data.result.number_bags;
+        this.score = res.data.result.score;
+        this.isShowRecogButton = false;
       },
       (error) => {
         if (error.status == 200) {
